@@ -74,8 +74,8 @@ export default function Dashboard() {
           </Link>
         </header>
 
-        {/* Tabs */}
-        <div className="flex overflow-x-auto gap-2 p-1.5 mb-12 bg-white/60 backdrop-blur-md rounded-2xl w-fit shadow-sm border border-stone-200/50">
+        {/* Sticky Tabs */}
+        <div className="sticky top-6 z-50 flex overflow-x-auto gap-2 p-1.5 mb-12 bg-white/80 backdrop-blur-md rounded-2xl w-fit shadow-[0_8px_30px_rgb(0,0,0,0.08)] border border-stone-200/50 mx-auto">
           <button
             onClick={() => setActiveTab('personal')}
             className={cn(
@@ -101,84 +101,93 @@ export default function Dashboard() {
               activeTab === 'viewer' ? "bg-white text-stone-900 shadow-sm border border-stone-200/50" : "text-stone-500 hover:text-stone-800 hover:bg-stone-100/50"
             )}
           >
-            <Search className="w-4 h-4" /> Open a Link
+            <LinkIcon className="w-4 h-4" /> Open a Link
           </button>
         </div>
 
         {/* Tab Content: Personal Wishes */}
         {activeTab === 'personal' && (
-          wishes.length === 0 ? (
-            <div className="bg-white rounded-3xl shadow-sm border border-stone-100 p-16 text-center max-w-2xl mx-auto">
-              <div className="w-20 h-20 bg-rose-50 text-rose-300 rounded-full flex items-center justify-center mx-auto mb-6">
-                <Gift className="w-10 h-10" />
+          <section className="mb-24 animate-in fade-in slide-in-from-bottom-4 duration-500">
+            <div className="flex items-center gap-3 mb-8">
+              <div className="w-10 h-10 rounded-full bg-stone-200/50 flex items-center justify-center text-stone-500">
+                <User className="w-5 h-5" />
               </div>
-              <h2 className="text-3xl font-serif text-stone-800 mb-3">No cards created yet</h2>
-              <p className="text-stone-500 mb-8 text-lg leading-relaxed max-w-md mx-auto">
-                Design beautiful, personalized birthday wishes and schedule them to be opened on that perfect day.
-              </p>
-              <Link 
-                to="/create" 
-                className="inline-flex items-center gap-2 bg-rose-600 text-white px-8 py-3.5 rounded-full font-medium hover:bg-rose-700 transition-all shadow-[0_4px_14px_0_rgba(225,29,72,0.2)] hover:shadow-[0_6px_20px_0_rgba(225,29,72,0.3)] hover:-translate-y-0.5"
-              >
-                Start Crafting
-              </Link>
+              <h2 className="text-3xl font-serif text-stone-800">My Cards</h2>
             </div>
-          ) : (
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-              {wishes.map(wish => (
-                <div key={wish.id} className="bg-white rounded-3xl shadow-sm border border-stone-100 p-8 flex flex-col relative overflow-hidden group hover:shadow-md transition-shadow">
-                  <div className={`absolute top-0 left-0 w-full h-1.5 ${THEMES[wish.th]?.background || 'bg-stone-200'}`} />
-                  
-                  <div className="mb-6 mt-1 flex justify-between items-start gap-4">
-                    <div>
-                      <span className="text-xs font-semibold uppercase tracking-widest text-stone-400 mb-1 block">To</span>
-                      <h3 className={cn("font-serif text-2xl text-stone-800 line-clamp-1", wish.hf || THEMES[wish.th]?.headerFont)}>{wish.t}</h3>
-                    </div>
-                    <div className="bg-stone-50 rounded-lg px-3 py-1.5 text-center shrink-0 border border-stone-100">
-                      <span className="text-xs font-medium uppercase tracking-widest text-stone-400 block mb-0.5">Date</span>
-                      <span className="text-sm font-semibold text-stone-700">{format(new Date(wish.d), 'MMM d')}</span>
-                    </div>
-                  </div>
-                  
-                  <p className={cn("text-stone-600 font-serif italic text-lg leading-relaxed line-clamp-3 mb-8 flex-grow", wish.bf || THEMES[wish.th]?.bodyFont)}>
-                    "{wish.m}"
-                  </p>
-                  
-                  <div className="flex items-center gap-2 pt-6 border-t border-stone-100 mt-auto opacity-80 group-hover:opacity-100 transition-opacity">
-                    <a 
-                      href={getWishUrl(wish)}
-                      target="_blank"
-                      rel="noreferrer"
-                      className="flex-1 flex items-center justify-center gap-2 bg-stone-50 text-stone-700 py-2.5 rounded-xl text-sm font-medium hover:bg-stone-100 hover:text-stone-900 transition-colors"
-                    >
-                      <ExternalLink className="w-4 h-4" /> Preview
-                    </a>
-                    <button 
-                      onClick={() => copyLink(wish)}
-                      className="flex items-center justify-center bg-stone-50 text-stone-600 p-2.5 rounded-xl hover:bg-stone-100 hover:text-stone-900 transition-colors"
-                      title="Copy Link"
-                    >
-                      <Copy className="w-4 h-4" />
-                    </button>
-                    <button 
-                      onClick={() => emailLink(wish)}
-                      className="flex items-center justify-center bg-stone-50 text-stone-600 p-2.5 rounded-xl hover:bg-stone-100 hover:text-stone-900 transition-colors"
-                      title="Send via Email"
-                    >
-                      <Mail className="w-4 h-4" />
-                    </button>
-                    <button 
-                      onClick={() => deleteWish(wish.id)}
-                      className="flex items-center justify-center bg-stone-50 text-rose-500 p-2.5 rounded-xl hover:bg-rose-50 hover:text-rose-600 transition-colors"
-                      title="Delete Wish"
-                    >
-                      <Trash2 className="w-4 h-4" />
-                    </button>
-                  </div>
+            
+            {wishes.length === 0 ? (
+              <div className="bg-white rounded-3xl shadow-sm border border-stone-100 p-16 text-center max-w-2xl mx-auto block">
+                <div className="w-20 h-20 bg-rose-50 text-rose-300 rounded-full flex items-center justify-center mx-auto mb-6">
+                  <Gift className="w-10 h-10" />
                 </div>
-              ))}
-            </div>
-          )
+                <h2 className="text-3xl font-serif text-stone-800 mb-3">No cards created yet</h2>
+                <p className="text-stone-500 mb-8 text-lg leading-relaxed max-w-md mx-auto">
+                  Design beautiful, personalized birthday wishes and schedule them to be opened on that perfect day.
+                </p>
+                <Link 
+                  to="/create" 
+                  className="inline-flex items-center gap-2 bg-rose-600 text-white px-8 py-3.5 rounded-full font-medium hover:bg-rose-700 transition-all shadow-[0_4px_14px_0_rgba(225,29,72,0.2)] hover:shadow-[0_6px_20px_0_rgba(225,29,72,0.3)] hover:-translate-y-0.5"
+                >
+                  Start Crafting
+                </Link>
+              </div>
+            ) : (
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                {wishes.map(wish => (
+                  <div key={wish.id} className="bg-white rounded-3xl shadow-sm border border-stone-100 p-8 flex flex-col relative overflow-hidden group hover:shadow-md transition-shadow">
+                    <div className={`absolute top-0 left-0 w-full h-1.5 ${THEMES[wish.th]?.background || 'bg-stone-200'}`} />
+                    
+                    <div className="mb-6 mt-1 flex justify-between items-start gap-4">
+                      <div>
+                        <span className="text-xs font-semibold uppercase tracking-widest text-stone-400 mb-1 block">To</span>
+                        <h3 className={cn("font-serif text-2xl text-stone-800 line-clamp-1", wish.hf || THEMES[wish.th]?.headerFont)}>{wish.t}</h3>
+                      </div>
+                      <div className="bg-stone-50 rounded-lg px-3 py-1.5 text-center shrink-0 border border-stone-100">
+                        <span className="text-xs font-medium uppercase tracking-widest text-stone-400 block mb-0.5">Date</span>
+                        <span className="text-sm font-semibold text-stone-700">{format(new Date(wish.d), 'MMM d')}</span>
+                      </div>
+                    </div>
+                    
+                    <p className={cn("text-stone-600 font-serif italic text-lg leading-relaxed line-clamp-3 mb-8 flex-grow", wish.bf || THEMES[wish.th]?.bodyFont)}>
+                      "{wish.m}"
+                    </p>
+                    
+                    <div className="flex items-center gap-2 pt-6 border-t border-stone-100 mt-auto opacity-80 group-hover:opacity-100 transition-opacity">
+                      <a 
+                        href={getWishUrl(wish)}
+                        target="_blank"
+                        rel="noreferrer"
+                        className="flex-1 flex items-center justify-center gap-2 bg-stone-50 text-stone-700 py-2.5 rounded-xl text-sm font-medium hover:bg-stone-100 hover:text-stone-900 transition-colors"
+                      >
+                        <ExternalLink className="w-4 h-4" /> Preview
+                      </a>
+                      <button 
+                        onClick={() => copyLink(wish)}
+                        className="flex items-center justify-center bg-stone-50 text-stone-600 p-2.5 rounded-xl hover:bg-stone-100 hover:text-stone-900 transition-colors"
+                        title="Copy Link"
+                      >
+                        <Copy className="w-4 h-4" />
+                      </button>
+                      <button 
+                        onClick={() => emailLink(wish)}
+                        className="flex items-center justify-center bg-stone-50 text-stone-600 p-2.5 rounded-xl hover:bg-stone-100 hover:text-stone-900 transition-colors"
+                        title="Send via Email"
+                      >
+                        <Mail className="w-4 h-4" />
+                      </button>
+                      <button 
+                        onClick={() => deleteWish(wish.id)}
+                        className="flex items-center justify-center bg-stone-50 text-rose-500 p-2.5 rounded-xl hover:bg-rose-50 hover:text-rose-600 transition-colors"
+                        title="Delete Wish"
+                      >
+                        <Trash2 className="w-4 h-4" />
+                      </button>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            )}
+          </section>
         )}
 
         {/* Tab Content: Global Birthdays */}
@@ -200,61 +209,66 @@ export default function Dashboard() {
           };
 
           return (
-            <div className="animate-in fade-in slide-in-from-bottom-4 duration-500">
+            <section className="mb-24 animate-in fade-in slide-in-from-bottom-4 duration-500">
               <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-10">
-                <div className="max-w-xl">
-                  <h2 className="text-3xl font-serif text-stone-800 mb-2">Discover Popular Birthdays</h2>
-                  <p className="text-stone-500 text-lg">Send a beautifully crafted wish to your favorite personalities.</p>
+                <div className="max-w-xl flex items-start gap-4">
+                    <div className="w-10 h-10 mt-1 shrink-0 rounded-full bg-stone-200/50 flex items-center justify-center text-stone-500">
+                    <Globe className="w-5 h-5" />
+                  </div>
+                  <div>
+                    <h2 className="text-3xl font-serif text-stone-800 mb-2">Discover Popular Birthdays</h2>
+                    <p className="text-stone-500 text-lg">Send a beautifully crafted wish to your favorite personalities.</p>
+                  </div>
                 </div>
                 <div className="relative w-full md:w-80 shrink-0">
-                  <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-stone-400" />
-                  <input
-                    type="text"
-                    placeholder="Search by name or profession..."
-                    value={searchQuery}
-                    onChange={(e) => setSearchQuery(e.target.value)}
-                    className="w-full pl-11 pr-4 py-3 bg-white border border-stone-200 rounded-full focus:ring-2 focus:ring-rose-500/20 focus:border-rose-500 outline-none transition-all shadow-sm"
-                  />
-                </div>
+                <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-stone-400" />
+                <input
+                  type="text"
+                  placeholder="Search by name or profession..."
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                  className="w-full pl-11 pr-4 py-3 bg-white border border-stone-200 rounded-full focus:ring-2 focus:ring-rose-500/20 focus:border-rose-500 outline-none transition-all shadow-sm"
+                />
               </div>
-
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-                {filteredBirthdays.map((person, i) => (
-                  <div key={i} className="bg-white rounded-[2rem] p-6 flex flex-col items-center text-center shadow-sm border border-stone-100 hover:shadow-md hover:border-stone-200 transition-all group">
-                    <div className="w-16 h-16 bg-stone-50 rounded-full flex items-center justify-center mb-5 text-stone-400 group-hover:bg-rose-50 group-hover:text-rose-500 transition-colors">
-                      <PartyPopper className="w-7 h-7" />
-                    </div>
-                    <div className="text-xs font-semibold uppercase tracking-widest text-stone-400 mb-3">
-                      {format(new Date(person.date), 'MMMM do')}
-                    </div>
-                    <h3 className="font-serif text-xl text-stone-800 mb-1 line-clamp-1 w-full" title={person.name}>{person.name}</h3>
-                    <p className="text-sm text-stone-500 mb-6 italic">{person.desc}</p>
-                    
-                    <Link 
-                      to={`/create?to=${encodeURIComponent(person.name)}&date=${getUpcomingBirthday(person.date)}`}
-                      className="w-full mt-auto flex items-center justify-center gap-2 bg-stone-50 text-stone-700 py-3 rounded-xl text-sm font-medium hover:bg-stone-800 hover:text-white transition-all duration-300"
-                    >
-                      <Gift className="w-4 h-4" /> Create Card
-                    </Link>
-                  </div>
-                ))}
-              </div>
-              {filteredBirthdays.length === 0 && (
-                <div className="text-center py-20 bg-white rounded-3xl border border-stone-100">
-                  <div className="w-16 h-16 bg-stone-50 rounded-full flex items-center justify-center mx-auto mb-4 text-stone-300">
-                    <Search className="w-8 h-8" />
-                  </div>
-                  <p className="text-xl font-serif text-stone-600 mb-2">No matching birthdays found.</p>
-                  <p className="text-stone-400">Try a different search term.</p>
-                </div>
-              )}
             </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+              {filteredBirthdays.map((person, i) => (
+                <div key={i} className="bg-white rounded-[2rem] p-6 flex flex-col items-center text-center shadow-sm border border-stone-100 hover:shadow-md hover:border-stone-200 transition-all group">
+                  <div className="w-16 h-16 bg-stone-50 rounded-full flex items-center justify-center mb-5 text-stone-400 group-hover:bg-rose-50 group-hover:text-rose-500 transition-colors">
+                    <PartyPopper className="w-7 h-7" />
+                  </div>
+                  <div className="text-xs font-semibold uppercase tracking-widest text-stone-400 mb-3">
+                    {format(new Date(person.date), 'MMMM do')}
+                  </div>
+                  <h3 className="font-serif text-xl text-stone-800 mb-1 line-clamp-1 w-full" title={person.name}>{person.name}</h3>
+                  <p className="text-sm text-stone-500 mb-6 italic">{person.desc}</p>
+                  
+                  <Link 
+                    to={`/create?to=${encodeURIComponent(person.name)}&date=${getUpcomingBirthday(person.date)}`}
+                    className="w-full mt-auto flex items-center justify-center gap-2 bg-stone-50 text-stone-700 py-3 rounded-xl text-sm font-medium hover:bg-stone-800 hover:text-white transition-all duration-300"
+                  >
+                    <Gift className="w-4 h-4" /> Create Card
+                  </Link>
+                </div>
+              ))}
+            </div>
+            {filteredBirthdays.length === 0 && (
+              <div className="text-center py-20 bg-white rounded-3xl border border-stone-100">
+                <div className="w-16 h-16 bg-stone-50 rounded-full flex items-center justify-center mx-auto mb-4 text-stone-300">
+                  <Search className="w-8 h-8" />
+                </div>
+                <p className="text-xl font-serif text-stone-600 mb-2">No matching birthdays found.</p>
+                <p className="text-stone-400">Try a different search term.</p>
+              </div>
+            )}
+          </section>
           );
         })()}
 
         {/* Tab Content: Viewer */}
         {activeTab === 'viewer' && (
-          <div className="animate-in fade-in slide-in-from-bottom-4 duration-500">
+          <section className="mb-24 animate-in fade-in slide-in-from-bottom-4 duration-500">
             <div className="bg-white rounded-3xl shadow-sm border border-stone-100 p-10 md:p-16 max-w-2xl mx-auto text-center relative overflow-hidden">
               <div className="absolute top-0 right-0 w-64 h-64 bg-rose-50 rounded-full blur-3xl -mr-32 -mt-32 opacity-50 pointer-events-none" />
               
@@ -283,7 +297,7 @@ export default function Dashboard() {
                 </button>
               </form>
             </div>
-          </div>
+          </section>
         )}
 
       </div>
