@@ -3,7 +3,7 @@ import { useParams, Link } from 'react-router-dom';
 import { decodeWish } from '../lib/utils';
 import { WishPayload } from '../types';
 import { THEMES } from '../lib/themes';
-import { differenceInSeconds, isPast, isToday, format } from 'date-fns';
+import { format } from 'date-fns';
 import confetti from 'canvas-confetti';
 import { motion, AnimatePresence } from 'motion/react';
 import { Copy, PartyPopper, Mail, Gift } from 'lucide-react';
@@ -13,7 +13,6 @@ import { GIF_BACKGROUNDS } from '../lib/backgrounds';
 export default function ViewWish() {
   const { encoded } = useParams<{ encoded: string }>();
   const [wish, setWish] = useState<WishPayload | null>(null);
-  const [timeLeft, setTimeLeft] = useState<{ d: number; h: number; m: number; s: number } | null>(null);
   const [isOpen, setIsOpen] = useState(false);
   const [envelopeOpened, setEnvelopeOpened] = useState(false);
 
@@ -23,40 +22,6 @@ export default function ViewWish() {
       if (decoded) setWish(decoded);
     }
   }, [encoded]);
-
-  useEffect(() => {
-    if (!wish || !wish.d) return;
-
-    // Parse YYYY-MM-DD reliably in the local time zone
-    const [year, month, day] = wish.d.split('-').map(Number);
-    const targetDate = new Date(year, month - 1, day);
-    targetDate.setHours(0, 0, 0, 0);
-
-    const updateTimer = () => {
-      const now = new Date();
-      if (isPast(targetDate) || isToday(targetDate)) {
-        setTimeLeft(null);
-        return;
-      }
-      
-      const diff = differenceInSeconds(targetDate, now);
-      if (diff <= 0) {
-        setTimeLeft(null);
-        return;
-      }
-
-      setTimeLeft({
-        d: Math.floor(diff / (3600 * 24)),
-        h: Math.floor((diff % (3600 * 24)) / 3600),
-        m: Math.floor((diff % 3600) / 60),
-        s: diff % 60
-      });
-    };
-
-    updateTimer();
-    const interval = setInterval(updateTimer, 1000);
-    return () => clearInterval(interval);
-  }, [wish]);
 
   const handleOpen = () => {
     setIsOpen(true);
@@ -112,13 +77,6 @@ export default function ViewWish() {
 
   const theme = THEMES[wish.th] || THEMES.party;
 
-  const renderTimerBlock = (val: number, label: string) => (
-    <div className="flex flex-col items-center bg-white/20 backdrop-blur-sm rounded-xl p-4 min-w-[80px]">
-      <span className="text-3xl font-serif font-bold mb-1">{val}</span>
-      <span className="text-xs uppercase tracking-wider opacity-80">{label}</span>
-    </div>
-  );
-
   return (
     <div className={cn("min-h-screen font-sans flex flex-col items-center justify-center p-6 sm:p-12 transition-all duration-1000", theme.background)}>
       
@@ -145,7 +103,7 @@ export default function ViewWish() {
       </div>
 
       <AnimatePresence mode="wait">
-        {wish.mo === 'letter' && !envelopeOpened ? (
+        {!envelopeOpened ? (
           <motion.div
             key="envelope"
             initial={{ scale: 0.9, y: 20, opacity: 0 }}
@@ -179,37 +137,10 @@ export default function ViewWish() {
               Tap to open
             </p>
           </motion.div>
-        ) : timeLeft ? (
-          /* COUNTDOWN STATE */
-          <motion.div 
-            key="countdown"
-            initial={{ opacity: 0, scale: 0.95 }}
-            animate={{ opacity: 1, scale: 1 }}
-            exit={{ opacity: 0, scale: 1.05, filter: 'blur(10px)' }}
-            transition={{ duration: 0.5 }}
-            className={cn("max-w-xl w-full text-center", theme.textColor)}
-          >
-            <div className="bg-black/10 p-8 sm:p-12 rounded-[2rem] backdrop-blur-md shadow-2xl border border-white/20">
-              <PartyPopper className="w-16 h-16 mx-auto mb-6 opacity-80" />
-              <h1 className="text-3xl sm:text-4xl font-serif font-bold mb-4 leading-tight drop-shadow-sm">
-                A special wish is waiting for {wish.t}
-              </h1>
-              <p className="text-lg opacity-90 mb-10 drop-shadow-sm">
-                It's locked until {format(new Date(wish.d), 'MMMM do, yyyy')}. Come back then!
-              </p>
-              
-              <div className="flex justify-center gap-3 sm:gap-4">
-                {renderTimerBlock(timeLeft.d, 'Days')}
-                {renderTimerBlock(timeLeft.h, 'Hours')}
-                {renderTimerBlock(timeLeft.m, 'Mins')}
-                {renderTimerBlock(timeLeft.s, 'Secs')}
-              </div>
-            </div>
-          </motion.div>
         ) : !isOpen ? (
           /* UNLOCKED / TAP TO OPEN STATE */
           <motion.div
-            key="envelope"
+            key="envelope2"
             initial={{ opacity: 0, scale: 0.95 }}
             animate={{ opacity: 1, scale: 1 }}
             exit={{ opacity: 0, scale: 1.1, filter: 'blur(10px)' }}

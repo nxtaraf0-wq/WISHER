@@ -10,7 +10,6 @@ import { GoogleGenAI } from "@google/genai";
 import { WishPayload } from '../types';
 import { MESSAGE_TEMPLATES } from '../lib/templates';
 import { GIF_BACKGROUNDS } from '../lib/backgrounds';
-import { ECARD_TEMPLATES } from '../lib/ecardTemplates';
 
 const ai = new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY });
 
@@ -21,8 +20,8 @@ const compressImage = (file: File): Promise<string> => {
       const img = new Image();
       img.onload = () => {
         const canvas = document.createElement('canvas');
-        const MAX_WIDTH = 400;
-        const MAX_HEIGHT = 400;
+        const MAX_WIDTH = 120;
+        const MAX_HEIGHT = 120;
         let width = img.width;
         let height = img.height;
 
@@ -41,7 +40,7 @@ const compressImage = (file: File): Promise<string> => {
         canvas.height = height;
         const ctx = canvas.getContext('2d');
         ctx?.drawImage(img, 0, 0, width, height);
-        resolve(canvas.toDataURL('image/jpeg', 0.6));
+        resolve(canvas.toDataURL('image/jpeg', 0.2));
       };
       img.onerror = error => reject(error);
       img.src = event.target?.result as string;
@@ -76,19 +75,16 @@ export default function CreateWish() {
 
   const [searchParams] = useSearchParams();
 
-  const presetTemplateId = searchParams.get('template');
-  const presetTemplate = ECARD_TEMPLATES.find(t => t.id === presetTemplateId);
-
   const [form, setForm] = useState<WishPayload>({
     t: searchParams.get('to') || '',
     f: '',
     m: '',
     d: searchParams.get('date') || format(new Date(), 'yyyy-MM-dd'),
-    th: presetTemplate ? presetTemplate.th : 'party' as ThemeId,
-    hf: presetTemplate ? (presetTemplate.hf || '') : '',
-    bf: presetTemplate ? (presetTemplate.bf || '') : '',
-    bg: presetTemplate ? (presetTemplate.bg || '') : '',
-    mo: 'time',
+    th: 'party' as ThemeId,
+    hf: '',
+    bf: '',
+    bg: '',
+    mo: 'letter',
     p1: '',
     p2: '',
     p3: '',
@@ -437,7 +433,7 @@ export default function CreateWish() {
       <div className="hidden lg:flex w-full lg:w-[55%] xl:w-[60%] p-8 items-center justify-center bg-stone-100/50 border-l border-stone-200/50 relative">
         <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,_var(--tw-gradient-stops))] from-stone-200/50 via-stone-100/20 to-transparent"></div>
         
-        <div className="max-w-md w-full relative z-10 transition-all duration-500 hover:scale-[1.02]">
+        <div className="max-w-md w-full relative z-10 transition-all duration-500 ease-out hover:scale-[1.03] hover:-translate-y-2 hover:shadow-[0_20px_40px_-15px_rgba(0,0,0,0.15)] rounded-[2.5rem]">
           <div 
             className={cn(
               "w-full aspect-[3/4] rounded-[2.5rem] shadow-2xl overflow-hidden flex flex-col relative before:absolute before:inset-0 before:bg-gradient-to-b before:from-white/10 before:to-transparent before:z-0",

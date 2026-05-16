@@ -7,7 +7,6 @@ import { encodeWish } from '../lib/utils';
 import { THEMES } from '../lib/themes';
 import { cn } from '../lib/utils';
 import { GLOBAL_BIRTHDAYS } from '../lib/globalBirthdays';
-import { ECARD_TEMPLATES } from '../lib/ecardTemplates';
 
 export default function Dashboard() {
   const { wishes, deleteWish } = useSavedWishes();
@@ -74,25 +73,6 @@ export default function Dashboard() {
             <span>Craft a New Wish</span>
           </Link>
         </header>
-
-        {/* E-Card Templates */}
-        <div className="mb-12 animate-in fade-in slide-in-from-top-4 duration-500">
-          <h2 className="text-xl font-serif text-stone-800 mb-4 pl-1">Start from a Template</h2>
-          <div className="flex overflow-x-auto pb-4 -mx-1 px-1 gap-4 snap-x">
-            {ECARD_TEMPLATES.map(template => (
-              <Link
-                key={template.id}
-                to={`/create?template=${template.id}`}
-                className="snap-start flex-none w-32 sm:w-40 flex flex-col gap-3 group relative text-left"
-              >
-                 <div className="w-full aspect-[3/4] rounded-2xl overflow-hidden shadow-sm border border-stone-200 group-hover:border-rose-300 group-hover:shadow-md transition-all">
-                   <img src={template.thumbnail} alt={template.name} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
-                 </div>
-                 <span className="text-sm font-medium text-stone-700 pl-1">{template.name}</span>
-              </Link>
-            ))}
-          </div>
-        </div>
 
         {/* Tabs */}
         <div className="flex overflow-x-auto gap-2 p-1.5 mb-12 bg-white/60 backdrop-blur-md rounded-2xl w-fit shadow-sm border border-stone-200/50">
